@@ -181,12 +181,20 @@ void setup() {
         request->send(200, "application/json", json);
     });
 
-    server.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
-        Serial.println("format");
-        LittleFS.remove("/relays.json");
-        LittleFS.remove("/crash.json");
-        request->send(200, "text/plain", "device formatted");
-    });
+server.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
+    Serial.println("format");
+    LittleFS.remove("/relays.json");
+    LittleFS.remove("/crash.json");
+    request->send(200, "text/plain", "device formatted");
+});
+
+server.on("/**", HTTP_OPTIONS, [](AsyncWebServerRequest *request) {
+    AsyncWebServerResponse *response = request->beginResponse(200);
+    response->addHeader("Access-Control-Allow-Origin", "*");
+    response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    response->addHeader("Access-Control-Allow-Headers", "Content-Type");
+    request->send(response);
+});
 
     server.onNotFound(notFound);
 
