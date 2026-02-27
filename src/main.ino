@@ -188,12 +188,18 @@ server.on("/format", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", "device formatted");
 });
 
-server.on("/**", HTTP_OPTIONS, [](AsyncWebServerRequest *request) {
+server.onNotFound([](AsyncWebServerRequest *request) {
+
+  if (request->method() == HTTP_OPTIONS) {
     AsyncWebServerResponse *response = request->beginResponse(200);
     response->addHeader("Access-Control-Allow-Origin", "*");
     response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     response->addHeader("Access-Control-Allow-Headers", "Content-Type");
     request->send(response);
+    return;
+  }
+
+  request->send(404);
 });
 
     server.onNotFound(notFound);
